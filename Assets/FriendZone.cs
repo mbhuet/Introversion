@@ -19,6 +19,7 @@ public class FriendZone : MonoBehaviour {
 
 	public void Unlock(){
 		foreach(Jumper j in jumpers){
+			//j.rigidbody2D.AddForce(Vector2.up * j.jumpFactor * 10);
 			j.bigJump = true;
 		}
 		if (unlockIndex < hiddenObjects.Length) {

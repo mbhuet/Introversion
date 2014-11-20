@@ -148,32 +148,23 @@ public class Player : MonoBehaviour {
 	}
 
 
-	
-	public void Upgrade(){
-		jumpSpeed += 5;
-		//speed += 3;
-		//maxJumpHold = jumpSpeed * 2;
-	}
-
-
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.tag == "Zone") 
 		{
 			zone = true;
 			friendZone = other.GetComponent<FriendZone>();
+			Debug.Log(friendZone);
 		} 
 	}
-	void OnTriggerStay2D(Collider2D other)
-	{
 
-	}
 	void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.tag == "Zone") 
 		{
 			zone = false;
-			friendZone = null;
+			if (friendZone == other.GetComponent<FriendZone>())
+				friendZone = null;
 
 		}
 	}

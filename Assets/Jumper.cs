@@ -28,12 +28,12 @@ public class Jumper : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (isGrounded ()) {
-			float bigFactor = 1;
+			float bigFactor = 0;
 			if (bigJump){
-				bigFactor = 2;
+				bigFactor = 1;
 				bigJump = false;
 			}
-			rigidbody2D.AddForce(Vector2.up * Random.Range(1.0f,1.5f) * jumpFactor * bigFactor);
+			rigidbody2D.AddForce(Vector2.up * (Random.Range(1.0f,1.2f) + bigFactor) * jumpFactor);
 			rigidbody2D.velocity = rigidbody2D.velocity + Vector2.up * .01f;
 		}
 	}
