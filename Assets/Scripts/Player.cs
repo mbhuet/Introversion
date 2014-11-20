@@ -30,7 +30,9 @@ public class Player : MonoBehaviour {
 
 	private float jumpHold;
 	private float maxJumpHold = 10;
-	
+
+	public bool NPC = false; //tells if interacting with NPCs
+
 	public bool canClimb = false;
 
 	public bool grounded;
@@ -79,6 +81,7 @@ public class Player : MonoBehaviour {
 			moveDirection.y = 0;
 
 			if (Input.GetButtonDown("Jump")){
+				audio.Play();
 				moveDirection.y = jumpSpeed;
 				jumpHold = 0;
 				state = CharacterState.Jumping;
@@ -124,6 +127,16 @@ public class Player : MonoBehaviour {
 		}
 		*/
 //		Debug.Log (moveDirection.y + " " + grounded);
+
+		if (jumpSpeed > 10 && NPC) 
+		{
+			jumpSpeed += -0.1f;
+		}
+		if (jumpSpeed < 30 && !NPC) 
+		{
+			jumpSpeed += 0.1f;
+		}
+
 	}
 
 	bool isGrounded(){
@@ -147,8 +160,21 @@ public class Player : MonoBehaviour {
 		maxJumpHold = jumpSpeed * 2;
 	}
 
-	
-	
-	
-	
+
+
+	void OnTriggerStay2D(Collider2D other)
+	{
+		if (other.tag == "NPC") 
+		{
+			NPC = true;
+		} 
+	}
+	void OnTriggerExit2D(Collider2D other)
+	{
+		if (other.tag == "NPC") 
+		{
+			NPC = false;
+		}
+	}
+
 }
