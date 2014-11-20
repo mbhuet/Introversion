@@ -14,30 +14,30 @@ public enum CharacterState {
 }
 
 public class Player : MonoBehaviour {
+
+	public AudioClip jumpSound;
 	
 	public bool canMove;
+	bool zone;
+	FriendZone friendZone;
 	
 	public float speed = 6.0F;
 	public float jumpSpeed = 8.0F;
+	private float maxJump;
 	public float gravity = 20.0F;
 	private Vector3 moveDirection = Vector3.zero;
-
-	private float oldJumpSpeed;
-	private float oldSpeed;
-	
-	public float maxEnergy = 100;
-	public float energy = 100;
 
 	private float jumpHold;
 	private float maxJumpHold = 10;
 
 	public bool NPC = false; //tells if interacting with NPCs
 
+
+
 	public bool canClimb = false;
 
 	public bool grounded;
-	CharacterController controller;
-	
+
 	
 	public CharacterState state;
 
@@ -47,11 +47,9 @@ public class Player : MonoBehaviour {
 	Transform bottomRight;
 	
 	void Start(){
-		
+		maxJump = jumpSpeed;
 		state = CharacterState.Idle;
 		maxJumpHold = jumpSpeed * 2;
-
-		controller = this.GetComponent<CharacterController>();
 
 		topRight = transform.Find("top_right").transform;
 		topLeft = transform.Find("top_right").transform;
@@ -60,7 +58,6 @@ public class Player : MonoBehaviour {
 
 	}
 	void Move() {
-		grounded = isGrounded ();
 
 		moveDirection.x = Input.GetAxis("Horizontal")  * speed;;
 
@@ -68,41 +65,23 @@ public class Player : MonoBehaviour {
 		if (canClimb){
 			if (Mathf.Abs(Input.GetAxis("Vertical")) > 0){
 				state = CharacterState.Climbing;
+				rigidbody2D.gravityScale = 0;
 			}
 		}
 
-		if (state == CharacterState.Climbing){
-			moveDirection.y = Input.GetAxis("Vertical") * speed;
-		}
 
 
 		if (grounded) {
 			state = CharacterState.Walking;
 			moveDirection.y = 0;
 
-			if (Input.GetButtonDown("Jump")){
-				audio.Play();
-				moveDirection.y = jumpSpeed;
-				jumpHold = 0;
-				state = CharacterState.Jumping;
-			}
+
 			
 		}
 		else if (state != CharacterState.Climbing){
-			/*
-			//moveDirection += Input.GetAxis("Horizontal") * Vector3.right * speed;
-			//moveDirection.x = Mathf.Clamp(moveDirection.x, -speed, speed);	
-			if (Input.GetButtonUp("Jump")){
-				jumpHold = maxJumpHold;
-			}
-			// this is used to let players increase jump height by holding the button
-			if (Input.GetButton("Jump") && jumpHold < maxJumpHold){
-				//moveDirection.y += gravity * Time.fixedDeltaTime /2;
-				jumpHold +=1;
-			}
-			*/
+			//rigidbody2D.gravityScale = 1;
 			
-			moveDirection.y -= gravity * Time.deltaTime;
+			//moveDirection.y -= gravity * Time.deltaTime;
 		}
 		
 
@@ -114,28 +93,44 @@ public class Player : MonoBehaviour {
 		
 		// applying moveDirection
 		//moveDirection = transform.TransformDirection(moveDirection);
-
-		rigidbody2D.MovePosition(this.transform.position + moveDirection * Time.deltaTime);
+		//transform.Translate (moveDirection * Time.fixedDeltaTime);
+		//rigidbody2D.MovePosition(this.transform.position + moveDirection * Time.fixedDeltaTime);
+		Vector2 veloc = rigidbody2D.velocity;
+		veloc.x = 0;
+		veloc.x = Input.GetAxis ("Horizontal") * Time.fixedDeltaTime * speed * 10;
+		rigidbody2D.velocity = veloc ;
 		//controller.Move (moveDirection * Time.fixedDeltaTime);
 	}
 
 	void Update(){
-		Move ();
-		/*
-		if (Input.GetButtonDown("Jump")){
-			Debug.Log("jump, isGrounded: " + grounded + " ");
-		}
-		*/
-//		Debug.Log (moveDirection.y + " " + grounded);
+		grounded = isGrounded ();
 
-		if (jumpSpeed > 10 && NPC) 
-		{
-			jumpSpeed += -0.1f;
-		}
-		if (jumpSpeed < 30 && !NPC) 
+		if (grounded && Input.GetButtonDown("Jump")){
+			audio.pitch = (jumpSpeed/maxJump);
+			audio.PlayOneShot(jumpSound);
+			rigidbody2D.AddForce(Vector3.up * jumpSpeed *100);
+			//moveDirection.y = jumpSpeed;
+			jumpHold = 0;
+			state = CharacterState.Jumping;
+
+			if (friendZone != null){
+				jumpSpeed -= maxJump/6.0f;
+				if (jumpSpeed < maxJump/3f){
+					jumpSpeed = maxJump/3f;
+				}
+				else{friendZone.Unlock();}
+			}
+		} 
+
+		if (grounded && !zone && jumpSpeed < maxJump) 
 		{
 			jumpSpeed += 0.1f;
 		}
+
+	}
+
+	void FixedUpdate(){
+		Move ();
 
 	}
 
@@ -157,23 +152,29 @@ public class Player : MonoBehaviour {
 	public void Upgrade(){
 		jumpSpeed += 5;
 		//speed += 3;
-		maxJumpHold = jumpSpeed * 2;
+		//maxJumpHold = jumpSpeed * 2;
 	}
 
 
-
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.tag == "Zone") 
+		{
+			zone = true;
+			friendZone = other.GetComponent<FriendZone>();
+		} 
+	}
 	void OnTriggerStay2D(Collider2D other)
 	{
-		if (other.tag == "NPC") 
-		{
-			NPC = true;
-		} 
+
 	}
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.tag == "NPC") 
+		if (other.tag == "Zone") 
 		{
-			NPC = false;
+			zone = false;
+			friendZone = null;
+
 		}
 	}
 

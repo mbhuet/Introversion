@@ -3,21 +3,15 @@ using System.Collections;
 
 public class Star : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	public AudioClip collectSound;
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.tag == "Player") 
 		{
 			renderer.enabled = false;	
-			audio.Play();
+			collider2D.enabled = false;
+			audio.PlayOneShot(collectSound);
 			particleSystem.Emit(10);
 			StartCoroutine("kill",2);
 		}
