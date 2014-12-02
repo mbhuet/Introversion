@@ -17,7 +17,7 @@ public class leavingScene : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(a1) text.text = "This was fun.";
-		if(a2) text.text = "I’ll see you guys at ~@#&*’s birthday party next week!";
+		if(a2) text.text = "See you guys at ~@#&*’s birthday party!";
 		if(a3) Application.LoadLevel(1);
 	}
 
