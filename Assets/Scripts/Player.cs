@@ -16,7 +16,17 @@ public enum CharacterState {
 public class Player : MonoBehaviour {
 
 	public AudioClip jumpSound;
-	
+
+	public TextMesh text;
+	string[] phrases = {
+		"Hiiii!",
+		"Hey, what's going on?",
+		"Heeyyy!",
+		"Why are you so quiet?",
+		"Nice party huh?",
+		"Whooooo!"
+	};
+
 	public bool canMove;
 	bool zone;
 	FriendZone friendZone;
@@ -153,6 +163,10 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Zone") 
 		{
 			zone = true;
+			int rand = Random.Range(0,phrases.Length);
+			Debug.Log(rand);
+			Debug.Log("Length: " + phrases.Length);
+			text.text = phrases[rand].ToString();
 			friendZone = other.GetComponent<FriendZone>();
 			Debug.Log(friendZone);
 		} 
@@ -163,6 +177,7 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Zone") 
 		{
 			zone = false;
+			text.text = "";
 			if (friendZone == other.GetComponent<FriendZone>())
 				friendZone = null;
 
