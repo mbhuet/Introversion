@@ -26,14 +26,14 @@ public class Player : MonoBehaviour {
 		"Nice party huh?",
 		"Whooooo!"
 	};
-
+	public bool friend = false;
 	public bool canMove;
-	bool zone;
-	FriendZone friendZone;
+	public bool zone;
+	public FriendZone friendZone;
 	
 	public float speed = 6.0F;
 	public float jumpSpeed = 8.0F;
-	private float maxJump;
+	public float maxJump;
 	public float gravity = 20.0F;
 	private Vector3 moveDirection = Vector3.zero;
 
@@ -124,7 +124,13 @@ public class Player : MonoBehaviour {
 			state = CharacterState.Jumping;
 
 			if (friendZone != null){
+				if (friend){
+					jumpSpeed -= maxJump/9.0f;
+					                      
+				}
+				else{
 				jumpSpeed -= maxJump/6.0f;
+				}
 				if (jumpSpeed < maxJump/3f){
 					jumpSpeed = maxJump/3f;
 				}
@@ -163,12 +169,24 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Zone") 
 		{
 			zone = true;
+			if (other.name !="BuddyZone"){
 			int rand = Random.Range(0,phrases.Length);
 			Debug.Log(rand);
 			Debug.Log("Length: " + phrases.Length);
 			text.text = phrases[rand].ToString();
+			}
 			friendZone = other.GetComponent<FriendZone>();
 			Debug.Log(friendZone);
+			
+		} 
+
+		if (other.tag == "BuddyZone") 
+		{
+			//zone = false;
+			friend = true;
+			//friendZone = other.GetComponent<FriendZone>();
+			Debug.Log(friendZone);
+			
 		} 
 	}
 
@@ -181,6 +199,11 @@ public class Player : MonoBehaviour {
 			if (friendZone == other.GetComponent<FriendZone>())
 				friendZone = null;
 
+		}
+
+		if (other.tag == "BuddyZone") 
+		{
+			friend = false;
 		}
 	}
 

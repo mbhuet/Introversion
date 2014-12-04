@@ -10,10 +10,12 @@ public class FriendZone : MonoBehaviour {
 	int unlockIndex=0;
 	// Use this for initialization
 	void Start () {
-		foreach (GameObject obj in hiddenObjects) {
-			obj.renderer.enabled = false;
-			obj.collider2D.enabled = false;
-		}
+		if (hiddenObjects.Length > 0) {
+						foreach (GameObject obj in hiddenObjects) {
+								obj.renderer.enabled = false;
+								obj.collider2D.enabled = false;
+						}
+				}
 	}
 
 

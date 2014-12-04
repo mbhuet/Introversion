@@ -2,13 +2,20 @@
 using System.Collections;
 
 public class bondingScene : MonoBehaviour {
+
+	public FriendZone zone;
+	public Jumper bud;
+
+	public GameObject gate;
+
+	bool alreadyDone = false;
 	
-	
-	bool a1,a2,a3,a4,a5 = false;
+	bool a1,a2,a3,a4,a5, a6 = false;
 	public TextMesh text1;
 	public TextMesh text2;
 	// Use this for initialization
-	void Start () {
+	void Begin () {
+		Debug.Log ("bonding scene");
 		text1.text = "";
 		text2.text = "";
 		StartCoroutine (Wait1(3));
@@ -16,6 +23,8 @@ public class bondingScene : MonoBehaviour {
 		StartCoroutine (Wait3(10));
 		StartCoroutine (Wait4(13));
 		StartCoroutine (Wait5(16));
+		StartCoroutine (Wait6(20));
+
 	}
 	
 	// Update is called once per frame
@@ -35,6 +44,9 @@ public class bondingScene : MonoBehaviour {
 		if (a5) {
 			text2.text = "This isn’t my kind of crowd either.";
 				}
+		if (a6) {
+			text2.text = "";
+		}
 	}
 	
 	
@@ -63,5 +75,30 @@ public class bondingScene : MonoBehaviour {
 		
 		yield return new WaitForSeconds(seconds);
 		a5 = true;
+	}
+	IEnumerator Wait6(float seconds){
+		
+		yield return new WaitForSeconds(seconds);
+		a6 = true;
+		Color mustard = new Color (234f/255f,212f/255f,67f/255f);
+		bud.renderer.material.color = mustard;
+
+		bud.jumpFactor = 300;
+
+		zone.tag = "BuddyZone";
+
+		GameObject.FindGameObjectWithTag ("Player").GetComponent<Player>().zone = false;
+		GameObject.FindGameObjectWithTag ("Player").GetComponent<Player>().maxJump += 3;
+		GameObject.FindGameObjectWithTag ("Player").GetComponent<Player>().friendZone = null;
+
+		GameObject.Destroy (gate.gameObject);
+
+	}
+
+	void OnTriggerEnter2D(Collider2D other){
+		if (other.tag == "Player" && !alreadyDone) {
+						Begin ();
+			alreadyDone = true;
+				}
 	}
 }
